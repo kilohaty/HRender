@@ -1,0 +1,137 @@
+import Element from './element';
+import Utils from "../utils/misc";
+
+/**
+ *
+ * EXAMPLE:
+ *
+ * ====== Spirit Image Data ======
+ *
+ * statusData: {
+ *  // [status: stand]
+ *  stand: {
+ *    "0": {
+ *      "left": 0,
+ *      "top": 0,
+ *    },
+ *    "length": 1, // frame number
+ *    "width": 180, // frame image width
+ *    "height": 126, // frame image height
+ *    "frameDelay": 100, // frame delay (ms)
+ *    "src": 'https://kilohaty.com/example_stand.png', // frame source url
+ *    "loopCount": null, // loop count, empty is means infinity
+ *  },
+ *
+ *  // [status: attack]
+ *   attack: {
+ *    "0": {
+ *      "left": 0,
+ *      "top": 0,
+ *    },
+ *    "1": {
+ *      "left": 180,
+ *      "top": 0,
+ *    },
+ *    "2": {
+ *      "left": 360,
+ *      "top": 0,
+ *    },
+ *    "length": 3,
+ *     "width": 180,
+ *     "height": 126,
+ *     "frameDelay": 150,
+ *     "src": 'https://kilohaty.com/example_move.png',
+ *     "loopCount": 1,
+ *   }
+ * }
+ */
+
+const DEFAULT_ATTRIBUTES = {
+  type: 'spirit',
+  status: null,
+  defaultStatus: null,
+  statusData: {},
+  lastFrameTime: 0,
+  frameIndex: 0,
+  updateList: ['statusData', 'status']
+};
+
+class Sprite extends Element {
+  constructor(options = {}) {
+    const opts = Object.assign({}, DEFAULT_ATTRIBUTES, options);
+    super(opts);
+  }
+
+  async update() {
+    try {
+      this.lastFrameTime = 0;
+      this.frameIndex    = 0;
+      for (let status in this.statusData) {
+        if (this.statusData.hasOwnProperty(status)) {
+          const data = this.statusData[status];
+          data.loopedCount = 0;
+          if (!data.imageSource) {
+            data.imageSource = await Utils.loadImage(data.src);
+          }
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  isPointOnElement({x, y}) {
+    const status = this.status;
+    const data   = this.statusData[status] || {};
+    if (!data) return false;
+
+    const left   = this.left;
+    const right  = this.left + data.width;
+    const top    = this.top;
+    const bottom = this.top + data.height;
+    return x >= left && x <= right && y >= top && y <= bottom;
+  }
+
+  render(ctx) {
+    const status = this.status;
+    const data   = this.statusData[status] || {};
+    if (!data.imageSource) return;
+
+    const frameData = data[this.frameIndex];
+    if (!frameData) return;
+
+    const now = Date.now();
+    let left = this.left;
+    let top  = this.top;
+    if (this.flipX) left = -(this.left + data.width);
+    if (this.flipY) top = -(this.top + data.height);
+    ctx.save();
+    ctx.scale(this.flipX ? -1 : 1, this.flipY ? -1 : 1);
+    ctx.drawImage(
+      data.imageSource,
+      frameData.left,
+      frameData.top,
+      data.width,
+      data.height,
+      left,
+      top,
+      data.width,
+      data.height);
+    ctx.restore();
+    // calc frameIndex and loopCount
+    if (now - this.lastFrameTime >= data.frameDelay) {
+      this.frameIndex++;
+      this.lastFrameTime = now;
+      if (this.frameIndex >= data.length) {
+        this.frameIndex = 0;
+        data.loopedCount++;
+        if (data.loopCount && data.loopedCount >= data.loopCount) {
+          this.status = this.defaultStatus;
+        }
+      }
+    }
+  }
+
+}
+
+export default Sprite;
