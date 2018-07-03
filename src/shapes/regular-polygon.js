@@ -10,8 +10,7 @@ const DEFAULT_ATTRIBUTES = {
   type: 'regular-polygon',
   centerX: 0,
   centerY: 0,
-  edgeNumber: 3, // max number is 999
-  edgeLength: 0,
+  edgeNumber: 3, // 最大值 999
   startAngle: 0, // 起始角度
   _startRadian: 0, // 起始角度(弧度表示)
   _centralAngle: 0, // 中心角，相邻的两个顶点与它的中心的连线的夹角
@@ -37,9 +36,6 @@ class RegularPolygon extends Polygon {
     if (!isNaN(this.startAngle)) {
       this._startRadian = this.startAngle * PI / 180;
     }
-    // if (!this.radius && this.edgeLength) {
-    //   this.radius = this.edgeLength / 2 / sin(this._centralRadian / 2);
-    // }
     this._centralAngle  = 360 / this.edgeNumber;
     this._centralRadian = this._centralAngle * PI / 180;
 
