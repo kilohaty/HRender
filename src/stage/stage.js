@@ -1,4 +1,3 @@
-import Element from '../shapes/element';
 import Event from '../utils/event';
 import Utils from '../utils/misc';
 import EVENT_TYPES from '../utils/event-types';
