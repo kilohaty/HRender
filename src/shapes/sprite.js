@@ -3,26 +3,26 @@ import Utils from "../utils/misc";
 
 /**
  *
- * EXAMPLE:
+ * 使用示例:
  *
  * ====== Spirit Image Data ======
  *
  * statusData: {
- *  // [status: stand]
+ *  // [状态: stand]
  *  stand: {
  *    "0": {
  *      "left": 0,
  *      "top": 0,
  *    },
- *    "length": 1, // frame number
- *    "width": 180, // frame image width
- *    "height": 126, // frame image height
- *    "frameDelay": 100, // frame delay (ms)
- *    "src": 'https://kilohaty.com/example_stand.png', // frame source url
- *    "loopCount": null, // loop count, empty is means infinity
+ *    "length": 1, // 总帧数
+ *    "width": 180, // 每一帧图像区域宽度
+ *    "height": 126, // 每一帧图像区域高度
+ *    "frameDelay": 100, // 帧延迟
+ *    "src": 'https://kilohaty.com/example_stand.png', // 资源路径
+ *    "loopCount": null, // 播放次数
  *  },
  *
- *  // [status: attack]
+ *  // [状态: attack]
  *   attack: {
  *    "0": {
  *      "left": 0,
