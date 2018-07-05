@@ -16,10 +16,6 @@ const DEFAULT_ATTRIBUTES = {
   _centralAngle: 0, // 中心角，相邻的两个顶点与它的中心的连线的夹角
   _centralRadian: 0, // 中心角(弧度表示)
   radius: 0, // 半径
-  points: null,
-  lineWidth: 1,
-  strokeStyle: '#000000',
-  fillStyle: 'transparent',
   updateList: ['centerX', 'centerY', 'startAngle', 'edgeNumber', 'radius']
 };
 
