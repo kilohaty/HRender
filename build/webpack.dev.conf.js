@@ -4,7 +4,9 @@ module.exports = {
 
   output: {
     path: path.join(__dirname, '../dist'),
-    filename: 'H.js'
+    filename: 'H.js',
+    libraryTarget: 'umd',
+    library: 'H'
   },
 
   resolve: {
