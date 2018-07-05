@@ -18,7 +18,18 @@ class Text extends Element {
     super(opts);
   }
 
-  render(ctx) {
+  update() {
+    const {ctx, id}  = CCManager.get();
+    ctx.font         = `${this.fontSize}px ${this.fontFamily}`;
+    ctx.fillStyle    = this.fillStyle;
+    ctx.textAlign    = this.textAlign;
+    ctx.textBaseline = this.textBaseline;
+    this.width       = ctx.measureText(this.text).width;
+    this.height      = Math.round(1.32 * this.fontSize);
+    CCManager.free(id);
+  }
+
+  _render(ctx) {
     let left = this.left;
     let top  = this.top;
     if (this.flipX) left = -(this.left + this.width);
@@ -33,17 +44,6 @@ class Text extends Element {
     ctx.restore();
   }
 
-  update() {
-    const {ctx, id}  = CCManager.get();
-    ctx.font         = `${this.fontSize}px ${this.fontFamily}`;
-    ctx.fillStyle    = this.fillStyle;
-    ctx.textAlign    = this.textAlign;
-    ctx.textBaseline = this.textBaseline;
-    this.width       = ctx.measureText(this.text).width;
-    this.height      = Math.round(1.32 * this.fontSize);
-    CCManager.free(id);
-  }
-
   isPointOnElement({x, y}) {
     const left   = this.left;
     const right  = this.left + this.width;
@@ -51,6 +51,7 @@ class Text extends Element {
     const bottom = this.top + this.height;
     return x >= left && x <= right && y >= top && y <= bottom;
   }
+
 }
 
 export default Text;

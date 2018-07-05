@@ -12,6 +12,7 @@ const DEFAULT_ATTRIBUTES = {
   lineWidth: 1,
   strokeStyle: '#000000',
   fillStyle: 'transparent',
+  updateList: ['points', 'lineWidth', 'strokeStyle', 'fillStyle']
 };
 
 class Polygon extends Element {
@@ -20,7 +21,7 @@ class Polygon extends Element {
     super(opts);
   }
 
-  render(ctx) {
+  _render(ctx) {
     if (!this.points) return;
     ctx.save();
     ctx.translate(this.left || 0, this.top || 0);
@@ -37,11 +38,12 @@ class Polygon extends Element {
 
   isPointOnElement({x, y}) {
     const {ctx, id} = CCManager.get();
-    this.render(ctx);
+    this._render(ctx);
     const res = ctx.isPointInPath(x, y);
     CCManager.free(id);
     return res;
   }
+
 }
 
 export default Polygon;

@@ -17,9 +17,11 @@ const DEFAULT_ATTRIBUTES = {
   _centralRadian: 0, // 中心角(弧度表示)
   radius: 0, // 半径
   points: null,
+  lineWidth: 1,
+  strokeStyle: '#000000',
+  fillStyle: 'transparent',
   updateList: ['centerX', 'centerY', 'startAngle', 'edgeNumber', 'radius']
 };
-
 
 class RegularPolygon extends Polygon {
   constructor(options) {

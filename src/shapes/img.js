@@ -24,15 +24,7 @@ class Img extends Element {
     }
   }
 
-  isPointOnElement({x, y}) {
-    const left   = this.left;
-    const right  = this.left + this.width;
-    const top    = this.top;
-    const bottom = this.top + this.height;
-    return x >= left && x <= right && y >= top && y <= bottom;
-  }
-
-  render(ctx) {
+  _render(ctx) {
     if (!this.imageSource) return;
     let left = this.left;
     let top  = this.top;
@@ -42,6 +34,14 @@ class Img extends Element {
     ctx.scale(this.flipX ? -1 : 1, this.flipY ? -1 : 1);
     ctx.drawImage(this.imageSource, left, top);
     ctx.restore();
+  }
+
+  isPointOnElement({x, y}) {
+    const left   = this.left;
+    const right  = this.left + this.width;
+    const top    = this.top;
+    const bottom = this.top + this.height;
+    return x >= left && x <= right && y >= top && y <= bottom;
   }
 
 }

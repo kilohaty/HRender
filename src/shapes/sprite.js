@@ -19,7 +19,7 @@ import Utils from "../utils/misc";
  *    "height": 126, // 每一帧图像区域高度
  *    "frameDelay": 100, // 帧延迟
  *    "src": 'https://kilohaty.com/example_stand.png', // 资源路径
- *    "loopCount": null, // 播放次数
+ *    "loopCount": null, // 播放次数, 无限循环设置空值即可
  *  },
  *
  *  // [状态: attack]
@@ -60,39 +60,39 @@ class Sprite extends Element {
   constructor(options = {}) {
     const opts = Object.assign({}, DEFAULT_ATTRIBUTES, options);
     super(opts);
+    this._initStatusData();
   }
 
-  async update() {
+  _initStatusData() {
+    for (let status in this.statusData) {
+      if (this.statusData.hasOwnProperty(status)) {
+        this.statusData[status].loopedCount = 0;
+      }
+    }
+  }
+
+  async update(attr) {
+    if (['statusData', 'status'].indexOf(attr) !== -1) {
+      this._updateStatus();
+    }
+  }
+
+  async _updateStatus() {
     try {
+      const data         = this.statusData[this.status];
       this.lastFrameTime = 0;
       this.frameIndex    = 0;
-      for (let status in this.statusData) {
-        if (this.statusData.hasOwnProperty(status)) {
-          const data = this.statusData[status];
-          data.loopedCount = 0;
-          if (!data.imageSource) {
-            data.imageSource = await Utils.loadImage(data.src);
-          }
-        }
+      data.loopedCount   = 0;
+      if (!data.imageSource) {
+        data.imageSource      = await Utils.loadImage(data.src);
+        this.attributeChanged = true;
       }
     } catch (err) {
       console.error(err);
     }
   }
 
-  isPointOnElement({x, y}) {
-    const status = this.status;
-    const data   = this.statusData[status] || {};
-    if (!data) return false;
-
-    const left   = this.left;
-    const right  = this.left + data.width;
-    const top    = this.top;
-    const bottom = this.top + data.height;
-    return x >= left && x <= right && y >= top && y <= bottom;
-  }
-
-  render(ctx) {
+  _render(ctx) {
     const status = this.status;
     const data   = this.statusData[status] || {};
     if (!data.imageSource) return;
@@ -101,8 +101,8 @@ class Sprite extends Element {
     if (!frameData) return;
 
     const now = Date.now();
-    let left = this.left;
-    let top  = this.top;
+    let left  = this.left;
+    let top   = this.top;
     if (this.flipX) left = -(this.left + data.width);
     if (this.flipY) top = -(this.top + data.height);
     ctx.save();
@@ -130,6 +130,27 @@ class Sprite extends Element {
         }
       }
     }
+  }
+
+  isPointOnElement({x, y}) {
+    const status = this.status;
+    const data   = this.statusData[status] || {};
+    if (!data) return false;
+
+    const left   = this.left;
+    const right  = this.left + data.width;
+    const top    = this.top;
+    const bottom = this.top + data.height;
+    return x >= left && x <= right && y >= top && y <= bottom;
+  }
+
+  isAnimationEnd() {
+    const data = this.statusData[this.status] || {};
+    return !data || data.loopCount && data.loopedCount >= data.loopCount;
+  }
+
+  shouldRender() {
+    return this.attributeChanged || !this.isAnimationEnd();
   }
 
 }

@@ -10,7 +10,8 @@ const DEFAULT_ATTRIBUTES = {
   flipY: false,
   visible: true,
   cache: false,
-  updateList: []
+  attributeChanged: true,
+  updateList: ['left', 'top', 'flipX', 'flipY', 'visible']
 };
 
 /**
@@ -18,13 +19,15 @@ const DEFAULT_ATTRIBUTES = {
  */
 class Element {
   constructor(options = {}) {
-    const opts = Object.assign({}, DEFAULT_ATTRIBUTES, options);
+    const opts      = Object.assign({}, DEFAULT_ATTRIBUTES, options);
+    opts.updateList = Array.from(new Set(DEFAULT_ATTRIBUTES.updateList.concat(options.updateList)));
     this._init(opts);
   }
 
   _init(opts) {
-    // 设置初始值
     this.$id = id++;
+    this._initAttributes(opts);
+
     for (let key in opts) {
       if (opts.hasOwnProperty(key)) {
         Object.defineProperty(this, key, {
@@ -32,24 +35,37 @@ class Element {
             return this['$' + key];
           },
           set: function (value) {
+            if (value === this['$' + key]) return;
+
             this['$' + key] = value;
-            if (this.$updateList.indexOf(key) !== -1) {
-              this.update();
+            if (this.$updateList && this.$updateList.indexOf(key) !== -1) {
+              this.update(key);
+              this.$attributeChanged = true;
             }
           }
         });
       }
     }
+
     this.set(opts);
+  }
+
+  _initAttributes(opts) {
+    for (let key in opts) {
+      if (opts.hasOwnProperty(key)) {
+        this['$' + key] = opts[key];
+      }
+    }
   }
 
   set(opts) {
     for (let key in opts) {
       if (opts.hasOwnProperty(key)) {
         this['$' + key] = opts[key];
+        this.update(key);
       }
     }
-    this.update();
+    this.$attributeChanged = true;
     return this;
   }
 
@@ -57,15 +73,28 @@ class Element {
     return this.$id;
   }
 
-  set id(id) {}
+  set id(id) {
+  }
 
-  update() {}
+  update() {
+  }
 
-  render(ctx) {}
+  render(ctx) {
+    this.$attributeChanged = false;
+    this._render(ctx);
+  }
+
+  _render(ctx) {
+  }
+
+  shouldRender() {
+    return this.attributeChanged;
+  }
 
   isPointOnElement({x, y, ctx}) {
     return false;
   }
+
 }
 
 export default Element;
