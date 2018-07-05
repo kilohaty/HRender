@@ -13,19 +13,16 @@ class CacheCanvasManager {
 Object.assign(CacheCanvasManager.prototype, {
   collection: [],
 
-  get() {
+  get(width = 1, height = 1) {
     const target = this.collection.filter(data => data.status === STATUS.FREE)[0];
     if (target) {
-      // clear canvas
-      target.canvas.width  = 300;
-      target.canvas.height = 150;
-      target.ctx.clearRect(0, 0, 300, 150);
-      // set status
-      target.status = STATUS.BUSY;
+      target.canvas.width  = width;
+      target.canvas.height = height;
+      target.status        = STATUS.BUSY;
       return {canvas: target.canvas, ctx: target.ctx, id: target.id};
     }
     this.add();
-    return this.get();
+    return this.get(width, height);
   },
 
   add() {
@@ -49,7 +46,7 @@ Object.assign(CacheCanvasManager.prototype, {
 /*
  * Usage:
  *
- * const {id, canvas, ctx} = manager.get();
+ * const {id, canvas, ctx} = manager.get(80, 50);
  * // do something
  * manager.free(id);
 */
