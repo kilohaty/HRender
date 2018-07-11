@@ -16,9 +16,10 @@ class Img extends Element {
 
   async update() {
     try {
-      this.imageSource = await Utils.loadImage(this.src);
-      this.width       = this.imageSource.width;
-      this.height      = this.imageSource.height;
+      this.imageSource      = await Utils.loadImage(this.src);
+      this.width            = this.imageSource.width;
+      this.height           = this.imageSource.height;
+      this.attributeChanged = true;
     } catch (err) {
       console.error(err);
     }
