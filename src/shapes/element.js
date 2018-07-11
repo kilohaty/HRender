@@ -9,7 +9,6 @@ const DEFAULT_ATTRIBUTES = {
   flipX: false,
   flipY: false,
   visible: true,
-  cache: false,
   attributeChanged: true,
   updateList: ['left', 'top', 'flipX', 'flipY', 'visible']
 };
