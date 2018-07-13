@@ -58,7 +58,7 @@ class Stage {
   }
 
   /**
-   * 移除元素至舞台
+   * 从舞台移除元素
    */
   remove(elementId) {
     for (let i = 0; i < this.elements.length; i++) {
