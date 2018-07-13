@@ -30,11 +30,13 @@ class Text extends Element {
   }
 
   _render(ctx) {
-    let left = this.left;
-    let top  = this.top;
-    if (this.flipX) left = -(this.left + this.width);
-    if (this.flipY) top = -(this.top + this.height);
+    const left = this.flipX ? -this.width : 0;
+    const top  = this.flipY ? -this.height : 0;
     ctx.save();
+    ctx.translate(this.left, this.top);
+    if (this.angle) {
+      ctx.rotate(this.angle / 180 * Math.PI);
+    }
     ctx.scale(this.flipX ? -1 : 1, this.flipY ? -1 : 1);
     ctx.font         = `${this.fontSize}px ${this.fontFamily}`;
     ctx.fillStyle    = this.fillStyle;
