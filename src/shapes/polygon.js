@@ -12,13 +12,36 @@ const DEFAULT_ATTRIBUTES = {
   lineWidth: 1,
   strokeStyle: '#000000',
   fillStyle: 'transparent',
-  updateList: ['points', 'lineWidth', 'strokeStyle', 'fillStyle']
+  updateList: ['points', 'lineWidth', 'strokeStyle', 'fillStyle'],
+  boundingRect: null,
 };
 
 class Polygon extends Element {
   constructor(options) {
     const opts = Object.assign({}, DEFAULT_ATTRIBUTES, options);
     super(opts);
+  }
+
+  update(attr) {
+    if (attr === 'points') {
+      this.boundingRect = this.getBoundingRect();
+    }
+  }
+
+  getBoundingRect() {
+    const minX = Math.min(...this.points.map(p => p.x));
+    const maxX = Math.max(...this.points.map(p => p.x));
+    const minY = Math.min(...this.points.map(p => p.y));
+    const maxY = Math.max(...this.points.map(p => p.y));
+
+    return {
+      left: this.left + minX,
+      top: this.top + minY,
+      width: maxX - minX,
+      height: maxY - minY,
+      centerX: (minX + maxX) / 2,
+      centerY: (minY + maxY) / 2,
+    };
   }
 
   _render(ctx) {
@@ -29,7 +52,12 @@ class Polygon extends Element {
     ctx.strokeStyle = this.strokeStyle;
     ctx.fillStyle   = this.fillStyle;
     ctx.beginPath();
-    this.points.forEach((point, i) => ctx[i ? 'lineTo' : 'moveTo'](point.x, point.y));
+    ctx.translate(this.flipX ? this.boundingRect.centerX : 0, this.flipY ? this.boundingRect.centerY : 0);
+    this.points.forEach((point, i) => {
+      const x = this.flipX ? -point.x + this.boundingRect.centerX : point.x;
+      const y = this.flipY ? -point.y + this.boundingRect.centerY : point.y;
+      ctx[i ? 'lineTo' : 'moveTo'](x, y);
+    });
     ctx.closePath();
     ctx.stroke();
     ctx.fill();

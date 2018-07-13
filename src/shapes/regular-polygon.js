@@ -12,11 +12,11 @@ const DEFAULT_ATTRIBUTES = {
   centerY: 0,
   edgeNumber: 3, // 最大值 999
   startAngle: 0, // 起始角度
+  radius: 0, // 半径
+  updateList: ['centerX', 'centerY', 'startAngle', 'edgeNumber', 'radius'],
   _startRadian: 0, // 起始角度(弧度表示)
   _centralAngle: 0, // 中心角，相邻的两个顶点与它的中心的连线的夹角
   _centralRadian: 0, // 中心角(弧度表示)
-  radius: 0, // 半径
-  updateList: ['centerX', 'centerY', 'startAngle', 'edgeNumber', 'radius']
 };
 
 class RegularPolygon extends Polygon {
@@ -46,6 +46,7 @@ class RegularPolygon extends Polygon {
       const y1     = this.centerY - (x0 - this.centerX) * sin(radian) + (y0 - this.centerY) * cos(radian);
       this.points.push({x: x1, y: y1});
     }
+    this.boundingRect = this.getBoundingRect();
   }
 
 }
