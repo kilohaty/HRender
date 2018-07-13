@@ -8,9 +8,10 @@ const DEFAULT_ATTRIBUTES = {
   top: 0,
   flipX: false,
   flipY: false,
+  angle: 0,
   visible: true,
   attributeChanged: true,
-  updateList: ['left', 'top', 'flipX', 'flipY', 'visible']
+  updateList: ['left', 'top', 'flipX', 'flipY', 'angle', 'visible']
 };
 
 /**
