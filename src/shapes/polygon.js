@@ -20,6 +20,7 @@ class Polygon extends Element {
   constructor(options) {
     const opts = Object.assign({}, DEFAULT_ATTRIBUTES, options);
     super(opts);
+    this.boundingRect = this.getBoundingRect();
   }
 
   update(attr) {
@@ -52,6 +53,9 @@ class Polygon extends Element {
     ctx.strokeStyle = this.strokeStyle;
     ctx.fillStyle   = this.fillStyle;
     ctx.beginPath();
+    if (this.angle) {
+      ctx.rotate(this.angle / 180 * Math.PI);
+    }
     ctx.translate(this.flipX ? this.boundingRect.centerX : 0, this.flipY ? this.boundingRect.centerY : 0);
     this.points.forEach((point, i) => {
       const x = this.flipX ? -point.x + this.boundingRect.centerX : point.x;
