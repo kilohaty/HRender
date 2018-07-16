@@ -10,10 +10,6 @@ export default {
     return id;
   },
 
-  clone(obj) {
-    return typeof obj === 'object' ? JSON.parse(JSON.stringify(obj)) : obj;
-  },
-
   loadImage(src) {
     return new Promise((resolve, reject) => {
       const image       = new Image();
