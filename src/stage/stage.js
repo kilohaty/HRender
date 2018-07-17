@@ -15,10 +15,10 @@ class Stage {
     this.initialize(options);
   }
 
-  initialize({domSelector, width, height, openEventListener}) {
-    const container = document.querySelector(domSelector);
+  initialize({el, width, height, openEventListener}) {
+    const container = el instanceof HTMLElement ? el : document.querySelector(el);
     if (!container) {
-      console.error(`can\'t find target element. [selector:${domSelector}]`);
+      console.error(`can\'t find target element. [el:${el}]`);
       return;
     }
 
