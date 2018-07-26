@@ -1,5 +1,5 @@
 import Element from './element';
-import Utils from "../utils/misc";
+import Utils from '../utils/misc';
 
 /**
  *
