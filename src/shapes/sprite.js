@@ -82,6 +82,8 @@ class Sprite extends Element {
       const data         = this.statusData[this.status];
       this.lastFrameTime = 0;
       this.frameIndex    = 0;
+      this.width         = data.width;
+      this.height        = data.height;
       data.loopedCount   = 0;
       if (!data.imageSource) {
         data.imageSource      = await Utils.loadImage(data.src);
@@ -100,23 +102,26 @@ class Sprite extends Element {
     const frameData = data[this.frameIndex];
     if (!frameData) return;
 
-    const now = Date.now();
-    let left  = this.left;
-    let top   = this.top;
-    if (this.flipX) left = -(this.left + data.width);
-    if (this.flipY) top = -(this.top + data.height);
+    const now  = Date.now();
+    const left = this.flipX ? -this.width : 0;
+    const top  = this.flipY ? -this.height : 0;
+
     ctx.save();
+    ctx.translate(this.left, this.top);
+    if (this.angle) {
+      ctx.rotate(this.angle / 180 * Math.PI);
+    }
     ctx.scale(this.flipX ? -1 : 1, this.flipY ? -1 : 1);
     ctx.drawImage(
       data.imageSource,
       frameData.left,
       frameData.top,
-      data.width,
-      data.height,
+      this.width,
+      this.height,
       left,
       top,
-      data.width,
-      data.height);
+      this.width,
+      this.height);
     ctx.restore();
     // calc frameIndex and loopCount
     if (now - this.lastFrameTime >= data.frameDelay) {
@@ -137,11 +142,15 @@ class Sprite extends Element {
     const data   = this.statusData[status] || {};
     if (!data) return false;
 
-    const left   = this.left;
-    const right  = this.left + data.width;
-    const top    = this.top;
-    const bottom = this.top + data.height;
-    return x >= left && x <= right && y >= top && y <= bottom;
+    return Utils.isPointOnRect(
+      {
+        left: this.left,
+        top: this.top,
+        width: this.width,
+        height: this.height,
+        angle: this.angle,
+      },
+      {x, y});
   }
 
   isAnimationEnd() {
