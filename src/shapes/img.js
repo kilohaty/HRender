@@ -39,12 +39,18 @@ class Img extends Element {
     ctx.restore();
   }
 
-  isPointOnElement({x, y}) {
-    const left   = this.left;
-    const right  = this.left + this.width;
-    const top    = this.top;
-    const bottom = this.top + this.height;
-    return x >= left && x <= right && y >= top && y <= bottom;
+  isPointOnElement(point) {
+    if (!this.imageSource) return false;
+
+    return Utils.isPointOnRect(
+      {
+        left: this.left,
+        top: this.top,
+        width: this.width,
+        height: this.height,
+        angle: this.angle,
+      },
+      point);
   }
 
 }
