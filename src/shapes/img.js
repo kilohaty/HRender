@@ -1,6 +1,8 @@
 import Element from './element';
 import Utils from '../utils/misc';
 
+const abs = Math.abs;
+
 const DEFAULT_ATTRIBUTES = {
   type: 'img',
   src: '',
@@ -17,8 +19,8 @@ class Img extends Element {
   async update() {
     try {
       this.imageSource      = await Utils.loadImage(this.src);
-      this.width            = this.imageSource.width;
-      this.height           = this.imageSource.height;
+      this.width            = this.imageSource.width * abs(this.scaleX);
+      this.height           = this.imageSource.height * abs(this.scaleY);
       this.attributeChanged = true;
     } catch (err) {
       console.error(err);
@@ -27,14 +29,18 @@ class Img extends Element {
 
   _render(ctx) {
     if (!this.imageSource) return;
-    const left = this.flipX ? -this.width : 0;
-    const top  = this.flipY ? -this.height : 0;
+
+    const scaleX = this.flipX ? -this.scaleX : this.scaleX;
+    const scaleY = this.flipY ? -this.scaleY : this.scaleY;
+    const left   = scaleX < 0 ? this.width / scaleX : 0;
+    const top    = scaleY < 0 ? this.height / scaleY : 0;
+
     ctx.save();
     ctx.translate(this.left, this.top);
     if (this.angle) {
       ctx.rotate(this.angle / 180 * Math.PI);
     }
-    ctx.scale(this.flipX ? -1 : 1, this.flipY ? -1 : 1);
+    ctx.scale(scaleX, scaleY);
     ctx.drawImage(this.imageSource, left, top);
     ctx.restore();
   }

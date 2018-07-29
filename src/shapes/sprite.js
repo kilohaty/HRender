@@ -1,6 +1,8 @@
 import Element from './element';
 import Utils from '../utils/misc';
 
+const abs = Math.abs;
+
 /**
  *
  * 使用示例:
@@ -82,8 +84,8 @@ class Sprite extends Element {
       const data         = this.statusData[this.status];
       this.lastFrameTime = 0;
       this.frameIndex    = 0;
-      this.width         = data.width;
-      this.height        = data.height;
+      this.width         = data.width * abs(this.scaleX);
+      this.height        = data.height * abs(this.scaleY);
       data.loopedCount   = 0;
       if (!data.imageSource) {
         data.imageSource      = await Utils.loadImage(data.src);
@@ -102,26 +104,30 @@ class Sprite extends Element {
     const frameData = data[this.frameIndex];
     if (!frameData) return;
 
-    const now  = Date.now();
-    const left = this.flipX ? -this.width : 0;
-    const top  = this.flipY ? -this.height : 0;
+    const now    = Date.now();
+    const scaleX = this.flipX ? -this.scaleX : this.scaleX;
+    const scaleY = this.flipY ? -this.scaleY : this.scaleY;
+    const left   = scaleX < 0 ? this.width / scaleX : 0;
+    const top    = scaleY < 0 ? this.height / scaleY : 0;
+    const width  = abs(this.width / scaleX);
+    const height = abs(this.height / scaleY);
 
     ctx.save();
     ctx.translate(this.left, this.top);
     if (this.angle) {
       ctx.rotate(this.angle / 180 * Math.PI);
     }
-    ctx.scale(this.flipX ? -1 : 1, this.flipY ? -1 : 1);
+    ctx.scale(scaleX, scaleY);
     ctx.drawImage(
       data.imageSource,
       frameData.left,
       frameData.top,
-      this.width,
-      this.height,
+      width,
+      height,
       left,
       top,
-      this.width,
-      this.height);
+      width,
+      height);
     ctx.restore();
     // calc frameIndex and loopCount
     if (now - this.lastFrameTime >= data.frameDelay) {

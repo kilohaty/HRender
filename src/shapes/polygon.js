@@ -1,6 +1,8 @@
 import Element from './element';
 import CCManager from '../utils/cache-canvas-manager';
 
+const abs = Math.abs;
+
 const DEFAULT_ATTRIBUTES = {
   type: 'polygon',
   /**
@@ -47,6 +49,10 @@ class Polygon extends Element {
 
   _render(ctx) {
     if (!this.points) return;
+
+    const scaleX = this.flipX ? -this.scaleX : this.scaleX;
+    const scaleY = this.flipY ? -this.scaleY : this.scaleY;
+
     ctx.save();
     ctx.translate(this.left || 0, this.top || 0);
     ctx.lineWidth   = this.lineWidth;
@@ -56,10 +62,10 @@ class Polygon extends Element {
     if (this.angle) {
       ctx.rotate(this.angle / 180 * Math.PI);
     }
-    ctx.translate(this.flipX ? this.boundingRect.centerX : 0, this.flipY ? this.boundingRect.centerY : 0);
+    ctx.scale(abs(scaleX), abs(scaleY));
     this.points.forEach((point, i) => {
-      const x = this.flipX ? -point.x + this.boundingRect.centerX : point.x;
-      const y = this.flipY ? -point.y + this.boundingRect.centerY : point.y;
+      const x = scaleX < 0 ? this.boundingRect.width - point.x : point.x;
+      const y = scaleY < 0 ? this.boundingRect.height - point.y : point.y;
       ctx[i ? 'lineTo' : 'moveTo'](x, y);
     });
     ctx.closePath();

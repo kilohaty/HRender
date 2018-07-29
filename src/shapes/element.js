@@ -6,6 +6,8 @@ const DEFAULT_ATTRIBUTES = {
   originY: 'top',
   left: 0,
   top: 0,
+  scaleX: 1,
+  scaleY: 1,
   flipX: false,
   flipY: false,
   angle: 0,

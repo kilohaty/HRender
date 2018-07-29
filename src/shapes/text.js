@@ -2,6 +2,8 @@ import Element from './element';
 import CCManager from '../utils/cache-canvas-manager';
 import Utils from '../utils/misc';
 
+const abs = Math.abs;
+
 const DEFAULT_ATTRIBUTES = {
   type: 'text',
   text: '',
@@ -25,20 +27,23 @@ class Text extends Element {
     ctx.fillStyle    = this.fillStyle;
     ctx.textAlign    = this.textAlign;
     ctx.textBaseline = this.textBaseline;
-    this.width       = ctx.measureText(this.text).width;
-    this.height      = Math.round(1.32 * this.fontSize);
+    this.width       = ctx.measureText(this.text).width * abs(this.scaleX);
+    this.height      = Math.round(1.32 * this.fontSize) * abs(this.scaleY);
     CCManager.free(id);
   }
 
   _render(ctx) {
-    const left = this.flipX ? -this.width : 0;
-    const top  = this.flipY ? -this.height : 0;
+    const scaleX = this.flipX ? -this.scaleX : this.scaleX;
+    const scaleY = this.flipY ? -this.scaleY : this.scaleY;
+    const left   = scaleX < 0 ? this.width / scaleX : 0;
+    const top    = scaleY < 0 ? this.height / scaleY : 0;
+
     ctx.save();
     ctx.translate(this.left, this.top);
     if (this.angle) {
       ctx.rotate(this.angle / 180 * Math.PI);
     }
-    ctx.scale(this.flipX ? -1 : 1, this.flipY ? -1 : 1);
+    ctx.scale(scaleX, scaleY);
     ctx.font         = `${this.fontSize}px ${this.fontFamily}`;
     ctx.fillStyle    = this.fillStyle;
     ctx.textAlign    = this.textAlign;
