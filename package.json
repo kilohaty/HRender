@@ -1,6 +1,6 @@
 {
   "name": "hrender",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "main": "dist/H.js",
   "repository": {
     "type": "git",
@@ -21,6 +21,7 @@
     "webpack-cli": "^2.0.9"
   },
   "dependencies": {
+    "express": "^4.16.3",
     "ferryboat.js": "^0.1.4"
   },
   "description": "A lightweight canvas library which providing 2d draw",
