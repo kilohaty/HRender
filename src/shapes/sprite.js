@@ -20,7 +20,7 @@ const abs = Math.abs;
  *    "width": 180, // 每一帧图像区域宽度
  *    "height": 126, // 每一帧图像区域高度
  *    "frameDelay": 100, // 帧延迟
- *    "src": 'https://kilohaty.com/example_stand.png', // 资源路径
+ *    "src": 'https://kilohaty.com/example_stand.png', // 资源路径，可选，覆盖Sprite的src属性
  *    "loopCount": null, // 播放次数, 无限循环设置空值即可
  *  },
  *
@@ -50,12 +50,14 @@ const abs = Math.abs;
 
 const DEFAULT_ATTRIBUTES = {
   type: 'spirit',
+  src: '',
+  imageSource: null,
   status: null,
   defaultStatus: null,
   statusData: {},
   lastFrameTime: 0,
   frameIndex: 0,
-  updateList: ['statusData', 'status']
+  updateList: ['src', 'statusData', 'status']
 };
 
 class Sprite extends Element {
@@ -74,20 +76,41 @@ class Sprite extends Element {
   }
 
   async update(attr) {
-    if (['statusData', 'status'].indexOf(attr) !== -1) {
+    if (attr === 'src') {
+      this._updateSrc();
+    } else if (['statusData', 'status'].indexOf(attr) !== -1) {
       this._updateStatus();
+    }
+  }
+
+  async _updateSrc() {
+    try {
+      if (this.src) {
+        this.imageSource = await Utils.loadImage(this.src);
+      } else {
+        this.imageSource = null;
+      }
+      this.attributeChanged = true;
+    } catch (err) {
+      console.error(err);
     }
   }
 
   async _updateStatus() {
     try {
-      const data         = this.statusData[this.status];
+      const data = this.statusData[this.status];
+      if (!data) {
+        this.status = this.defaultStatus;
+        console.error('Status error');
+        return;
+      }
+
       this.lastFrameTime = 0;
       this.frameIndex    = 0;
       this.width         = data.width * abs(this.scaleX);
       this.height        = data.height * abs(this.scaleY);
       data.loopedCount   = 0;
-      if (!data.imageSource) {
+      if (data.src && !data.imageSource) {
         data.imageSource      = await Utils.loadImage(data.src);
         this.attributeChanged = true;
       }
@@ -99,7 +122,9 @@ class Sprite extends Element {
   _render(ctx) {
     const status = this.status;
     const data   = this.statusData[status] || {};
-    if (!data.imageSource) return;
+
+    const imageSource = data.imageSource || this.imageSource;
+    if (!imageSource) return;
 
     const frameData = data[this.frameIndex];
     if (!frameData) return;
@@ -119,7 +144,7 @@ class Sprite extends Element {
     }
     ctx.scale(scaleX, scaleY);
     ctx.drawImage(
-      data.imageSource,
+      imageSource,
       frameData.left,
       frameData.top,
       width,
@@ -145,7 +170,7 @@ class Sprite extends Element {
 
   isPointOnElement({x, y}) {
     const status = this.status;
-    const data   = this.statusData[status] || {};
+    const data   = this.statusData[status];
     if (!data) return false;
 
     return Utils.isPointOnRect(
@@ -160,7 +185,7 @@ class Sprite extends Element {
   }
 
   isAnimationEnd() {
-    const data = this.statusData[this.status] || {};
+    const data = this.statusData[this.status];
     return !data || data.loopCount && data.loopedCount >= data.loopCount;
   }
 
