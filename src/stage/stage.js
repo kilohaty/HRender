@@ -11,6 +11,65 @@ function createCanvas({width = '300', height = '150'}) {
 }
 
 class Stage {
+
+  /**
+   * 舞台容器
+   * @HTMLElement
+   */
+  container = null;
+
+  /**
+   * 舞台宽度
+   * @Number
+   */
+  width = 0;
+
+  /**
+   * 舞台高度
+   * @Number
+   */
+  height = 0;
+
+  /**
+   * canvas
+   * @HTMLCanvasElement
+   */
+  canvas = null;
+
+  /**
+   * canvas 2d context
+   * @CanvasRenderingContext2D
+   */
+  ctx = null;
+
+  /**
+   * 缓存 canvas
+   * @HTMLCanvasElement
+   */
+  cacheCanvas = null;
+
+  /**
+   * cache canvas 2d context
+   * @CanvasRenderingContext2D
+   */
+  cacheCtx = null;
+
+  /**
+   * 舞台上的元素集合
+   * @Array
+   */
+  elements = [];
+
+  /**
+   * 事件总线
+   */
+  bus = null;
+
+  /**
+   * 上一次鼠标移入元素 ID
+   */
+  __lastMouseEnterShapeId = null;
+
   constructor(options = {}) {
     this.initialize(options);
   }
@@ -121,18 +180,10 @@ class Stage {
     }
     return result;
   }
-}
-
-/**
- * 事件
- */
-Object.assign(Stage.prototype, {
-
-  __lastMouseEnterShapeId: null,
 
   _onMouseEnter(e) {
     this.bus.emit(EVENT_TYPES.STAGE_MOUSE_ENTER, {e: e});
-  },
+  }
 
   _onMouseMove(e) {
     this.bus.emit(EVENT_TYPES.STAGE_MOUSE_MOVE, {e: e});
@@ -158,11 +209,11 @@ Object.assign(Stage.prototype, {
       }
       this.__lastMouseEnterShapeId = null;
     }
-  },
+  }
 
   _onMouseLeave(e) {
     this.bus.emit(EVENT_TYPES.STAGE_MOUSE_LEAVE, {e: e});
-  },
+  }
 
   _onMouseDown(e) {
     if (e.button === 2) return;
@@ -173,7 +224,7 @@ Object.assign(Stage.prototype, {
     if (ele) {
       this.bus.emit(EVENT_TYPES.ELEMENT_MOUSE_DOWN, {e: e, target: ele});
     }
-  },
+  }
 
   _onMouseUp(e) {
     if (e.button === 2) return;
@@ -184,7 +235,7 @@ Object.assign(Stage.prototype, {
     if (ele) {
       this.bus.emit(EVENT_TYPES.ELEMENT_MOUSE_UP, {e: e, target: ele});
     }
-  },
+  }
 
   _onClick(e) {
     if (e.button === 2) return;
@@ -194,69 +245,12 @@ Object.assign(Stage.prototype, {
     if (ele) {
       this.bus.emit(EVENT_TYPES.ELEMENT_CLICK, {e: e, target: ele});
     }
-  },
+  }
 
   _onContextMenu(e) {
     this.bus.emit(EVENT_TYPES.STAGE_CONTEXT_MENU, {e: e});
-  },
+  }
 
-});
-
-Object.assign(Stage.prototype, {
-
-  /**
-   * 舞台容器
-   * @HTMLElement
-   */
-  container: null,
-
-  /**
-   * 舞台宽度
-   * @Number
-   */
-  width: 0,
-
-  /**
-   * 舞台高度
-   * @Number
-   */
-  height: 0,
-
-  /**
-   * canvas
-   * @HTMLCanvasElement
-   */
-  canvas: null,
-
-  /**
-   * canvas 2d context
-   * @CanvasRenderingContext2D
-   */
-  ctx: null,
-
-  /**
-   * 缓存 canvas
-   * @HTMLCanvasElement
-   */
-  cacheCanvas: null,
-
-  /**
-   * cache canvas 2d context
-   * @CanvasRenderingContext2D
-   */
-  cacheCtx: null,
-
-  /**
-   * 舞台上的元素集合
-   * @Array
-   */
-  elements: [],
-
-  /**
-   * 事件总线
-   */
-  bus: null,
-
-});
+}
 
 export default Stage;
