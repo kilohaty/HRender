@@ -7,7 +7,7 @@ const abs = Math.abs;
  *
  * 使用示例:
  *
- * ====== Spirit Image Data ======
+ * ====== Sprite Image Data ======
  *
  * statusData: {
  *  // [状态: stand]
@@ -49,7 +49,7 @@ const abs = Math.abs;
  */
 
 const DEFAULT_ATTRIBUTES = {
-  type: 'spirit',
+  type: 'sprite',
   src: '',
   imageSource: null,
   status: null,
